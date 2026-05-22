@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { TenantProvider } from "@/contexts/TenantContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { ScrollToTop } from "@/components/ScrollToTop";
 
 import Index from "./pages/Index";
 import Login from "./pages/Login";
@@ -17,7 +18,10 @@ import PublicStoreHome from "@/pages/public/PublicStoreHome";
 import PublicProductDetail from "@/pages/public/PublicProductDetail";
 import PublicCart from "@/pages/public/PublicCart";
 import PublicCheckout from "@/pages/public/PublicCheckout";
-import PublicOrderConfirmation from "@/pages/public/PublicOrderConfirmation";
+import PublicOrderTracking from "@/pages/public/PublicOrderTracking";
+import PublicPixPayment from "@/pages/public/PublicPixPayment";
+import PublicCustomerAuth from "@/pages/public/PublicCustomerAuth";
+import PublicMyAccount from "@/pages/public/PublicMyAccount";
 
 import AdminLayout from "@/components/layouts/AdminLayout";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
@@ -27,6 +31,7 @@ import AdminProducts from "@/pages/admin/AdminProducts";
 import AdminCategories from "@/pages/admin/AdminCategories";
 import AdminShipping from "@/pages/admin/AdminShipping";
 import AdminSettings from "@/pages/admin/AdminSettings";
+import MercadoPagoCallback from "@/pages/admin/MercadoPagoCallback";
 import { PlaceholderPage } from "@/components/PlaceholderPage";
 
 import SuperAdminLayout from "@/components/layouts/SuperAdminLayout";
@@ -40,6 +45,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <AuthProvider>
           <Routes>
             {/* Marketing */}
@@ -59,7 +65,10 @@ const App = () => (
               <Route path="produto/:productId" element={<PublicProductDetail />} />
               <Route path="carrinho" element={<PublicCart />} />
               <Route path="checkout" element={<PublicCheckout />} />
-              <Route path="pedido/:orderId" element={<PublicOrderConfirmation />} />
+              <Route path="pedido/:orderId" element={<PublicOrderTracking />} />
+              <Route path="pagar/:orderId" element={<PublicPixPayment />} />
+              <Route path="conta" element={<PublicCustomerAuth />} />
+              <Route path="minha-conta" element={<PublicMyAccount />} />
             </Route>
 
             {/* Store admin */}
@@ -79,6 +88,7 @@ const App = () => (
               <Route path="clientes" element={<PlaceholderPage title="Clientes" />} />
               <Route path="entregas" element={<AdminShipping />} />
               <Route path="configuracoes" element={<AdminSettings />} />
+              <Route path="oauth/mercadopago/callback" element={<MercadoPagoCallback />} />
             </Route>
 
             {/* Platform super admin */}

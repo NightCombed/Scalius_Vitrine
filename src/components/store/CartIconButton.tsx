@@ -17,7 +17,7 @@ export function CartIconButton({ onClick }: Props) {
       aria-label={`Abrir carrinho (${itemCount} ${itemCount === 1 ? "item" : "itens"})`}
       className="relative"
     >
-      <ShoppingBag className="h-5 w-5" />
+      <ShoppingBag className="h-6 w-6" />
       {itemCount > 0 && (
         <span className="absolute -top-1 -right-1 grid place-items-center h-5 min-w-5 px-1 rounded-full bg-accent text-accent-foreground text-[10px] font-semibold">
           {itemCount}

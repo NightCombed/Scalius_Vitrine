@@ -4,7 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* FlorFlow design system — botanical, editorial, soft */
+/* Scalius Vitrine design system — botanical, editorial, soft */
 @layer base {
   :root {
     --background: 36 33% 97%;
@@ -16,15 +16,15 @@
     --popover: 0 0% 100%;
     --popover-foreground: 150 15% 12%;
 
-    /* Sage green — primary brand */
-    --primary: 145 22% 32%;
-    --primary-foreground: 36 33% 97%;
-    --primary-muted: 145 18% 88%;
+    /* Orange — primary brand */
+    --primary: 22 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --primary-muted: 22 100% 95%;
 
-    /* Terracotta — accent */
-    --accent: 16 55% 56%;
-    --accent-foreground: 36 33% 97%;
-    --accent-muted: 16 50% 92%;
+    /* Black — accent */
+    --accent: 0 0% 0%;
+    --accent-foreground: 0 0% 100%;
+    --accent-muted: 0 0% 95%;
 
     --secondary: 36 25% 92%;
     --secondary-foreground: 150 15% 18%;
@@ -37,25 +37,22 @@
 
     --border: 36 18% 88%;
     --input: 36 18% 88%;
-    --ring: 145 22% 32%;
+    --ring: 22 100% 50%;
 
     --radius: 0.625rem;
 
-    /* Gradients & shadows */
-    --gradient-botanical: linear-gradient(135deg, hsl(145 22% 32%), hsl(145 28% 22%));
-    --gradient-bloom: linear-gradient(135deg, hsl(16 55% 56%), hsl(16 65% 45%));
-    --gradient-soft: linear-gradient(180deg, hsl(36 33% 97%), hsl(36 25% 92%));
-    --shadow-soft: 0 1px 2px hsl(150 15% 12% / 0.04), 0 8px 24px -8px hsl(145 22% 32% / 0.08);
-    --shadow-elegant: 0 20px 50px -20px hsl(145 22% 32% / 0.25);
+    /* Gradients & shadows using variables */
+    --gradient-botanical: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.85));
+    --gradient-bloom: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent) / 0.85));
+    --gradient-soft: linear-gradient(180deg, hsl(var(--background)), hsl(var(--secondary) / 0.5));
+    --shadow-soft: 0 1px 2px hsl(var(--foreground) / 0.04), 0 8px 24px -8px hsl(var(--primary) / 0.1);
+    --shadow-elegant: 0 20px 50px -20px hsl(var(--primary) / 0.2);
 
     --sidebar-background: 36 30% 95%;
     --sidebar-foreground: 150 15% 18%;
-    --sidebar-primary: 145 22% 32%;
-    --sidebar-primary-foreground: 36 33% 97%;
-    --sidebar-accent: 36 25% 90%;
-    --sidebar-accent-foreground: 150 15% 18%;
-    --sidebar-border: 36 18% 86%;
-    --sidebar-ring: 145 22% 32%;
+    --sidebar-primary: 22 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-ring: 22 100% 50%;
   }
 
   .dark {
@@ -65,12 +62,12 @@
     --card-foreground: 36 25% 94%;
     --popover: 150 14% 11%;
     --popover-foreground: 36 25% 94%;
-    --primary: 145 30% 65%;
-    --primary-foreground: 150 15% 8%;
-    --primary-muted: 145 20% 18%;
-    --accent: 16 60% 62%;
-    --accent-foreground: 150 15% 8%;
-    --accent-muted: 16 30% 18%;
+    --primary: 22 100% 65%;
+    --primary-foreground: 0 0% 0%;
+    --primary-muted: 22 100% 15%;
+    --accent: 0 0% 100%;
+    --accent-foreground: 0 0% 0%;
+    --accent-muted: 0 0% 20%;
     --secondary: 150 12% 16%;
     --secondary-foreground: 36 25% 94%;
     --muted: 150 12% 14%;
@@ -79,15 +76,15 @@
     --destructive-foreground: 36 25% 94%;
     --border: 150 12% 18%;
     --input: 150 12% 18%;
-    --ring: 145 30% 65%;
+    --ring: 22 100% 65%;
     --sidebar-background: 150 14% 10%;
     --sidebar-foreground: 36 25% 90%;
-    --sidebar-primary: 145 30% 65%;
-    --sidebar-primary-foreground: 150 15% 8%;
+    --sidebar-primary: 22 100% 65%;
+    --sidebar-primary-foreground: 0 0% 0%;
     --sidebar-accent: 150 12% 14%;
     --sidebar-accent-foreground: 36 25% 90%;
     --sidebar-border: 150 12% 16%;
-    --sidebar-ring: 145 30% 65%;
+    --sidebar-ring: 22 100% 65%;
   }
 }
 
@@ -110,4 +107,24 @@
   .bg-gradient-soft { background: var(--gradient-soft); }
   .shadow-soft { box-shadow: var(--shadow-soft); }
   .shadow-elegant { box-shadow: var(--shadow-elegant); }
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ── Mobile admin UX ── */
+@media (max-width: 767px) {
+  /* Prevent tap highlight on interactive elements */
+  button, a {
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Slightly larger base font for readability */
+  .admin-page {
+    font-size: 15px;
+  }
 }

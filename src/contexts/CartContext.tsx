@@ -2,11 +2,23 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import { useTenant } from "@/contexts/TenantContext";
 
 export interface CartItem {
+  /** Unique key for this line — productId + variant options (allows same product with different variants) */
+  cartKey: string;
   productId: string;
   name: string;
   unit_price_cents: number;
   quantity: number;
   image_url?: string | null;
+  /** Human-readable variant label, e.g. "Tamanho: M" or "Cor: Azul | Tamanho: G" */
+  variantLabel?: string;
+  /** IDs of the selected ProductVariantOptions — used to decrement stock on order submit */
+  variantOptionIds?: string[];
+}
+
+/** Helper: builds a stable cart key from productId + optional variant option IDs */
+export function buildCartKey(productId: string, variantOptionIds?: string[]): string {
+  if (!variantOptionIds || variantOptionIds.length === 0) return productId;
+  return `${productId}__${[...variantOptionIds].sort().join("|")}`;
 }
 
 interface CartContextValue {
@@ -14,16 +26,19 @@ interface CartContextValue {
   notes: string;
   itemCount: number;
   subtotalCents: number;
-  add: (item: Omit<CartItem, "quantity">, quantity?: number) => void;
-  remove: (productId: string) => void;
-  updateQty: (productId: string, quantity: number) => void;
+  add: (
+    item: Omit<CartItem, "quantity" | "cartKey">,
+    quantity?: number
+  ) => void;
+  remove: (cartKey: string) => void;
+  updateQty: (cartKey: string, quantity: number) => void;
   setNotes: (notes: string) => void;
   clear: () => void;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-const storageKey = (slug: string) => `florflow:cart:${slug}`;
+const storageKey = (slug: string) => `scalius:cart:${slug}`;
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const { store } = useTenant();
@@ -38,7 +53,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const raw = localStorage.getItem(storageKey(slug));
       if (raw) {
         const parsed = JSON.parse(raw);
-        setItems(Array.isArray(parsed.items) ? parsed.items : []);
+        // Backfill cartKey for items saved before this version
+        const loadedItems: CartItem[] = (Array.isArray(parsed.items) ? parsed.items : []).map(
+          (it: Partial<CartItem>) => ({
+            ...it,
+            cartKey: it.cartKey ?? buildCartKey(it.productId!, it.variantOptionIds),
+          })
+        );
+        setItems(loadedItems);
         setNotesState(typeof parsed.notes === "string" ? parsed.notes : "");
       } else {
         setItems([]);
@@ -65,25 +87,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
       notes,
       itemCount,
       subtotalCents,
+
       add: (item, quantity = 1) => {
+        const cartKey = buildCartKey(item.productId, item.variantOptionIds);
         setItems((prev) => {
-          const existing = prev.find((p) => p.productId === item.productId);
+          const existing = prev.find((p) => p.cartKey === cartKey);
           if (existing) {
             return prev.map((p) =>
-              p.productId === item.productId ? { ...p, quantity: p.quantity + quantity } : p
+              p.cartKey === cartKey ? { ...p, quantity: p.quantity + quantity } : p
             );
           }
-          return [...prev, { ...item, quantity }];
+          return [...prev, { ...item, cartKey, quantity }];
         });
       },
-      remove: (productId) => setItems((prev) => prev.filter((p) => p.productId !== productId)),
-      updateQty: (productId, quantity) =>
+
+      remove: (cartKey) =>
+        setItems((prev) => prev.filter((p) => p.cartKey !== cartKey)),
+
+      updateQty: (cartKey, quantity) =>
         setItems((prev) =>
           quantity <= 0
-            ? prev.filter((p) => p.productId !== productId)
-            : prev.map((p) => (p.productId === productId ? { ...p, quantity } : p))
+            ? prev.filter((p) => p.cartKey !== cartKey)
+            : prev.map((p) => (p.cartKey === cartKey ? { ...p, quantity } : p))
         ),
+
       setNotes: (n) => setNotesState(n.slice(0, 500)),
+
       clear: () => {
         setItems([]);
         setNotesState("");

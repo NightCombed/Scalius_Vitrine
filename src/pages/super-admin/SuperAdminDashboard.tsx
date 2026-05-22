@@ -6,7 +6,7 @@ export default function SuperAdminDashboard() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="font-serif text-3xl mb-1">Plataforma FlorFlow</h1>
+        <h1 className="font-serif text-3xl mb-1">Plataforma Scalius Vitrine</h1>
         <p className="text-muted-foreground">Olá, {user?.full_name}. Gerencie todas as floriculturas da plataforma.</p>
       </header>
 
@@ -23,7 +23,7 @@ export default function SuperAdminDashboard() {
               <div key={s.id} className="p-5 grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
                 <div>
                   <div className="font-medium">{s.name}</div>
-                  <div className="text-xs text-muted-foreground">{s.slug}.florflow.app</div>
+                  <div className="text-xs text-muted-foreground">{s.slug}.scalius.com.br</div>
                 </div>
                 <div className="text-sm"><span className="text-muted-foreground">Status:</span> {s.status}</div>
                 <div className="text-sm"><span className="text-muted-foreground">Produtos:</span> {products}</div>

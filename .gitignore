@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Scratch and temp files
+scratch/
+supabase/.temp/
+*.timestamp-*
+temp_prompt.txt
+

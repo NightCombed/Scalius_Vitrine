@@ -15,7 +15,7 @@ interface Props {
 }
 
 export default function PublicCatalog({ byCategory = false }: Props) {
-    const { store } = useTenant();
+    const { store, settings } = useTenant();
     const params = useParams<{ catSlug?: string }>();
     const [query, setQuery] = useState("");
 
@@ -57,10 +57,13 @@ export default function PublicCatalog({ byCategory = false }: Props) {
             // Supabase supports: .eq("categories.slug", catSlug) on a join select.
             let qb = supabase
                 .from("products")
-                .select(catSlug ? "*, categories!inner(slug)" : "*")
+                .select(catSlug
+                    ? "*, categories!inner(slug), product_variant_groups(id)"
+                    : "*, product_variant_groups(id)"
+                )
                 .eq("store_id", storeId!)
                 .eq("is_active", true)
-                .order("name");
+                .order("sort_order", { ascending: true, nullsFirst: false });
 
             if (catSlug) {
                 qb = (qb as typeof qb).eq("categories.slug", catSlug);
@@ -80,6 +83,8 @@ export default function PublicCatalog({ byCategory = false }: Props) {
                 featured: row.is_featured ?? false,
                 stock: row.stock_qty ?? null,
                 created_at: row.created_at,
+                hasVariants: Array.isArray((row as any).product_variant_groups)
+                    && (row as any).product_variant_groups.length > 0,
             }));
         },
         enabled: !!storeId,
@@ -87,14 +92,21 @@ export default function PublicCatalog({ byCategory = false }: Props) {
 
     // ── Client-side text search + featured split ────────────────────────────────
     const { featuredProducts, regularProducts } = useMemo(() => {
+        const showOutOfStock = settings?.show_out_of_stock ?? true;
         const q = query.trim().toLowerCase();
+        
+        const filteredByStock = rawProducts.filter(p => {
+            if (p.stock === 0 && !showOutOfStock) return false;
+            return true;
+        });
+
         const filtered = q
-            ? rawProducts.filter(
+            ? filteredByStock.filter(
                 (p) =>
                     p.name.toLowerCase().includes(q) ||
                     (p.description ?? "").toLowerCase().includes(q),
             )
-            : rawProducts;
+            : filteredByStock;
         return {
             featuredProducts: filtered.filter((p) => (p as typeof p & { featured?: boolean }).featured),
             regularProducts: filtered.filter((p) => !(p as typeof p & { featured?: boolean }).featured),

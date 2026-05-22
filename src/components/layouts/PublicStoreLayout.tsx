@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
-import { Flower2, Menu } from "lucide-react";
+import { Menu, ShoppingBag, Store } from "lucide-react";
 import { useTenant } from "@/contexts/TenantContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/co
 import { CartIconButton } from "@/components/store/CartIconButton";
 import { CartDrawer } from "@/components/store/CartDrawer";
 import { WhatsAppButton } from "@/components/store/WhatsAppButton";
+import { CustomerNavButton } from "@/components/store/CustomerNavButton";
 import { cn } from "@/lib/utils";
 
 function PublicStoreShell() {
@@ -15,10 +16,48 @@ function PublicStoreShell() {
   const [cartOpen, setCartOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  useEffect(() => {
+    if (store) {
+      document.title = `${settings?.display_name ?? store.name} | Scalius Vitrine`;
+      
+      let link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.head.appendChild(link);
+      }
+      link.href = settings?.favicon_url || '/scalius-icon.png?v=3';
+    }
+  }, [store, settings]);
+
+  // Apply per-store brand colors to document root so Portals (Sheets, Modals) inherit them
+  useEffect(() => {
+    const root = document.documentElement;
+    if (settings?.brand_color) {
+      root.style.setProperty('--primary', settings.brand_color);
+      root.style.setProperty('--ring', settings.brand_color);
+    } else {
+      root.style.removeProperty('--primary');
+      root.style.removeProperty('--ring');
+    }
+    
+    if (settings?.secondary_color) {
+      root.style.setProperty('--accent', settings.secondary_color);
+    } else {
+      root.style.removeProperty('--accent');
+    }
+
+    return () => {
+      root.style.removeProperty('--primary');
+      root.style.removeProperty('--ring');
+      root.style.removeProperty('--accent');
+    };
+  }, [settings?.brand_color, settings?.secondary_color]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen grid place-items-center">
-        <Flower2 className="mx-auto h-10 w-10 text-primary animate-spin" />
+        <Store className="mx-auto h-10 w-10 text-primary animate-spin" />
       </div>
     );
   }
@@ -27,7 +66,7 @@ function PublicStoreShell() {
     return (
       <div className="min-h-screen grid place-items-center px-6 text-center">
         <div className="max-w-md space-y-3">
-          <Flower2 className="mx-auto h-10 w-10 text-primary" />
+          <Store className="mx-auto h-10 w-10 text-primary" />
           <h1 className="font-serif text-3xl">Loja não encontrada</h1>
           <p className="text-muted-foreground">
             Verifique o endereço da floricultura ou volte para a{" "}
@@ -37,6 +76,7 @@ function PublicStoreShell() {
       </div>
     );
   }
+
 
   const navItems = [
     { to: `/loja/${store.slug}`, label: "Início", end: true },
@@ -48,18 +88,12 @@ function PublicStoreShell() {
       isActive ? "text-primary font-medium" : "text-foreground"
     );
 
-  // Apply per-store brand colors as scoped CSS variables (HSL "H S% L%")
-  const brandStyle = {
-    ...(settings?.brand_color ? { ["--primary" as any]: settings.brand_color, ["--ring" as any]: settings.brand_color } : {}),
-    ...(settings?.secondary_color ? { ["--accent" as any]: settings.secondary_color } : {}),
-  } as React.CSSProperties;
-
   const contactMessage =
     settings?.contact_message_template ??
     `Olá, ${settings?.display_name ?? store.name}! Gostaria de fazer um pedido.`;
 
   return (
-    <div style={brandStyle} className="min-h-screen flex flex-col bg-gradient-soft">
+    <div className="min-h-screen flex flex-col bg-gradient-soft">
       <header className="border-b border-border/60 bg-background/80 backdrop-blur sticky top-0 z-30">
         <div className="container flex h-16 items-center justify-between gap-3">
           <Link to={`/loja/${store.slug}`} className="flex items-center gap-2 min-w-0">
@@ -71,7 +105,7 @@ function PublicStoreShell() {
               />
             ) : (
               <span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground flex-shrink-0">
-                <Flower2 className="h-4 w-4" />
+                <Store className="h-4 w-4" />
               </span>
             )}
             <span className="font-serif text-xl font-semibold truncate">
@@ -89,12 +123,13 @@ function PublicStoreShell() {
           </nav>
 
           <div className="flex items-center gap-1">
+            <CustomerNavButton storeId={store.id} storeSlug={store.slug} />
             <CartIconButton onClick={() => setCartOpen(true)} />
 
             <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="md:hidden" aria-label="Abrir menu">
-                  <Menu className="h-5 w-5" />
+                  <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-72">
@@ -156,7 +191,7 @@ function PublicStoreShell() {
             )}
           </div>
           <div className="md:text-right text-muted-foreground">
-            Powered by <Link to="/" className="text-primary">FlorFlow</Link>
+            Feito por <Link to="/" className="text-primary">Scalius</Link>
           </div>
         </div>
       </footer>

@@ -1,18 +1,18 @@
 /**
  * Tenant resolution strategy:
- *  - Production: subdomain  (rosa-bela.florflow.app)
- *  - Dev/preview: ?store=slug  (lovable.app preview, localhost)
+ *  - Production: subdomain  (rosa-bela.scalius.com.br)
+ *  - Dev/preview: ?store=slug  (localhost)
  *  - Future: custom domain table lookup (already typed in Store.custom_domain)
  *
  * Reserved subdomains are NOT treated as tenants (www, app, admin, api, etc.)
  */
 
 const RESERVED = new Set([
-  "www", "app", "admin", "api", "auth", "static", "cdn", "id-preview",
+  "www", "app", "admin", "api", "auth", "static", "cdn",
   "preview", "localhost",
 ]);
 
-const ROOT_HOSTS = new Set(["florflow.app", "lovable.app", "lovableproject.com"]);
+const ROOT_HOSTS = new Set(["scalius.com.br"]);
 
 export function resolveTenantSlug(): string | null {
   if (typeof window === "undefined") return null;
@@ -37,8 +37,7 @@ export function resolveTenantSlug(): string | null {
   if (RESERVED.has(candidate)) return null;
   if (ROOT_HOSTS.has(host)) return null;
 
-  // Lovable preview ids look like "id-preview--xxxx" — never a tenant
-  if (candidate.startsWith("id-preview")) return null;
+
 
   return candidate;
 }

@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import { Flower2, Trash2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { ShoppingBag, Trash2 } from "lucide-react";
 import { useTenant } from "@/contexts/TenantContext";
 import { useCart } from "@/contexts/CartContext";
 import { formatBRL } from "@/lib/mockData";
@@ -13,6 +13,7 @@ import { EmptyState } from "@/components/store/EmptyState";
 export default function PublicCart() {
   const { store } = useTenant();
   const { items, subtotalCents, updateQty, remove, notes, setNotes } = useCart();
+  const navigate = useNavigate();
 
   if (!store) return null;
 
@@ -40,19 +41,24 @@ export default function PublicCart() {
         <div className="space-y-4">
           <div className="rounded-xl border border-border bg-card divide-y divide-border shadow-soft">
             {items.map((it) => (
-              <div key={it.productId} className="p-4 flex gap-4">
+              <div key={it.cartKey} className="p-4 flex gap-4">
                 <div className="h-20 w-20 flex-shrink-0 rounded-md bg-gradient-soft grid place-items-center overflow-hidden">
                   {it.image_url ? (
                     <img src={it.image_url} alt={it.name} className="h-full w-full object-cover" />
                   ) : (
-                    <Flower2 className="h-8 w-8 text-primary/40" />
+                    <ShoppingBag className="h-8 w-8 text-primary/40" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0 flex flex-col gap-2">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="font-medium leading-tight">{it.name}</p>
+                    <div className="min-w-0">
+                      <p className="font-medium leading-tight">{it.name}</p>
+                      {it.variantLabel && (
+                        <p className="text-sm text-muted-foreground">{it.variantLabel}</p>
+                      )}
+                    </div>
                     <button
-                      onClick={() => remove(it.productId)}
+                      onClick={() => remove(it.cartKey)}
                       className="text-muted-foreground hover:text-destructive transition-colors"
                       aria-label="Remover"
                     >
@@ -61,7 +67,7 @@ export default function PublicCart() {
                   </div>
                   <p className="text-sm text-muted-foreground">{formatBRL(it.unit_price_cents)} cada</p>
                   <div className="flex items-center justify-between mt-auto">
-                    <QuantityStepper value={it.quantity} onChange={(v) => updateQty(it.productId, v)} />
+                    <QuantityStepper value={it.quantity} onChange={(v) => updateQty(it.cartKey, v)} />
                     <span className="font-medium text-primary">
                       {formatBRL(it.unit_price_cents * it.quantity)}
                     </span>
@@ -100,8 +106,13 @@ export default function PublicCart() {
             <Button size="lg" className="w-full" asChild>
               <Link to={`/loja/${store.slug}/checkout`}>Ir para o checkout</Link>
             </Button>
-            <Button size="lg" variant="outline" className="w-full" asChild>
-              <Link to={`/loja/${store.slug}/produtos`}>Continuar comprando</Link>
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full"
+              onClick={() => navigate(-1)}
+            >
+              Continuar comprando
             </Button>
           </div>
         </aside>

@@ -1,4 +1,4 @@
-import { Flower2 } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { formatBRL } from "@/lib/mockData";
@@ -24,7 +24,7 @@ export function OrderSummary({ shippingFeeCents = 0, shippingLabel, shippingPend
               {it.image_url ? (
                 <img src={it.image_url} alt={it.name} className="h-full w-full object-cover" />
               ) : (
-                <Flower2 className="h-5 w-5 text-primary/40" />
+                <ShoppingBag className="h-5 w-5 text-primary/40" />
               )}
             </div>
             <div className="flex-1 min-w-0 text-sm">

@@ -8,7 +8,7 @@ import type {
 } from "@/types/database";
 
 const mockRuntime = globalThis as typeof globalThis & {
-  __florflowMockDataInitialized__?: boolean;
+  __scaliusMockDataInitialized__?: boolean;
 };
 
 export const stores: Store[] = [
@@ -21,8 +21,8 @@ export const storeSettings: StoreSettings[] = [
     store_id: "st_1",
     display_name: "Rosa Bela",
     tagline: "Flores frescas para todos os momentos. Entregamos com carinho na sua região 🌸",
-    brand_color: "145 22% 32%",
-    secondary_color: "16 55% 56%",
+    brand_color: "22 100% 50%",
+    secondary_color: "0 0% 0%",
     whatsapp: "+55 11 90000-0000",
     address: "Rua das Acácias, 120 — Pinheiros, São Paulo — SP",
     address_street: "Rua das Acácias",
@@ -35,13 +35,18 @@ export const storeSettings: StoreSettings[] = [
     logo_url: null,
     currency: "BRL",
     timezone: "America/Sao_Paulo",
+    sound_enabled: true,
+    sound_volume: "normal",
+    silent_hours_enabled: false,
+    silent_hours_start: "20:00",
+    silent_hours_end: "08:00",
   },
   {
     store_id: "st_2",
     display_name: "Jardim do Sol",
     tagline: "Buquês frescos para todas as ocasiões",
-    brand_color: "16 55% 56%",
-    secondary_color: "145 22% 32%",
+    brand_color: "22 100% 50%",
+    secondary_color: "0 0% 0%",
     whatsapp: "+55 21 90000-0000",
     address: "Av. Atlântica, 500 — Copacabana, Rio de Janeiro — RJ",
     address_street: "Av. Atlântica",
@@ -54,6 +59,11 @@ export const storeSettings: StoreSettings[] = [
     logo_url: null,
     currency: "BRL",
     timezone: "America/Sao_Paulo",
+    sound_enabled: true,
+    sound_volume: "normal",
+    silent_hours_enabled: false,
+    silent_hours_start: "20:00",
+    silent_hours_end: "08:00",
   },
 ];
 
@@ -134,7 +144,7 @@ export const deliveries: Delivery[] = [
 ];
 
 export const platformUsers: PlatformUser[] = [
-  { id: "u_admin", email: "admin@florflow.app", full_name: "FlorFlow Admin", platform_role: "super_admin", created_at: "" },
+  { id: "u_admin", email: "admin@scalius.com.br", full_name: "Scalius Admin", platform_role: "super_admin", created_at: "" },
   { id: "u_owner1", email: "owner@rosabela.com", full_name: "Helena Rosa", created_at: "" },
 ];
 
@@ -142,8 +152,8 @@ export const storeMembers: StoreMember[] = [
   { id: "m1", store_id: "st_1", user_id: "u_owner1", role: "owner", created_at: "" },
 ];
 
-const MOCK_DATA_KEY = "florflow:mock-data:v1";
-const MOCK_DATA_EVENT = "florflow:mock-data:changed";
+const MOCK_DATA_KEY = "scalius:mock-data:v1";
+const MOCK_DATA_EVENT = "scalius:mock-data:changed";
 const mockListeners = new Set<() => void>();
 
 let mockSnapshot = {
@@ -231,8 +241,8 @@ const hydrateMockData = () => {
   }
 };
 
-if (typeof window !== "undefined" && !mockRuntime.__florflowMockDataInitialized__) {
-  mockRuntime.__florflowMockDataInitialized__ = true;
+if (typeof window !== "undefined" && !mockRuntime.__scaliusMockDataInitialized__) {
+  mockRuntime.__scaliusMockDataInitialized__ = true;
   hydrateMockData();
   window.addEventListener("storage", (event) => {
     if (event.key !== MOCK_DATA_KEY || !event.newValue) return;
@@ -326,16 +336,18 @@ export const metrics = {
   },
 };
 
-export const ORDER_STATUS_LABEL: Record<Order["status"], string> = {
-  pending: "Pendente",
-  preparing: "Em preparação",
+export const ORDER_STATUS_LABEL: Record<string, string> = {
+  pending:          "Pendente",
+  preparing:        "Em preparação",
+  ready:            "Pronto",
   out_for_delivery: "Saiu para entrega",
-  delivered: "Entregue",
-  cancelled: "Cancelado",
+  delivered:        "Entregue",
+  picked_up:        "Retirado",
+  cancelled:        "Cancelado",
 };
 
-export const ORDER_STATUS_FLOW: Order["status"][] = [
-  "pending", "preparing", "out_for_delivery", "delivered",
+export const ORDER_STATUS_FLOW: string[] = [
+  "pending", "preparing", "ready", "out_for_delivery", "delivered",
 ];
 
 /* ---------- Order creation (mock) ---------- */
