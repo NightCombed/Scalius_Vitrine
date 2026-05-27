@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { mapStoreSettings } from "@/lib/store-settings";
 import type { Store, StoreSettings } from "@/types/database";
+import { resolveTenantSlug } from "@/lib/tenant";
 
 interface TenantContextValue {
   store: Store | null;
