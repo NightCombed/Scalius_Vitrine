@@ -5,6 +5,7 @@ import { useCustomerAuth } from "@/hooks/useCustomerAuth";
 import { CustomerAuthModal } from "@/components/store/CustomerAuthModal";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
+import { getStoreLink } from "@/lib/tenant";
 
 export default function PublicCustomerAuth() {
   const { store } = useTenant();
@@ -20,7 +21,7 @@ export default function PublicCustomerAuth() {
     if (returnTo) {
       navigate(returnTo, { replace: true });
     } else {
-      navigate(`/loja/${store?.slug}`, { replace: true });
+      navigate(getStoreLink("", store?.slug || ""), { replace: true });
     }
   };
 
@@ -47,7 +48,7 @@ export default function PublicCustomerAuth() {
         Entrar ou criar conta
       </Button>
       <p className="text-xs text-muted-foreground">
-        <Link to={`/loja/${store.slug}`} className="underline underline-offset-4 hover:text-foreground">
+        <Link to={getStoreLink("", store.slug)} className="underline underline-offset-4 hover:text-foreground">
           Voltar à loja
         </Link>
       </p>
@@ -56,7 +57,7 @@ export default function PublicCustomerAuth() {
         open={open}
         onOpenChange={(v) => {
           setOpen(v);
-          if (!v) navigate(`/loja/${store.slug}`);
+          if (!v) navigate(getStoreLink("", store.slug));
         }}
         storeId={store.id}
         defaultTab="login"

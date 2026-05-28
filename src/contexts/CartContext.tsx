@@ -13,6 +13,17 @@ export interface CartItem {
   variantLabel?: string;
   /** IDs of the selected ProductVariantOptions — used to decrement stock on order submit */
   variantOptionIds?: string[];
+  /** True when the product has variant groups — used to flag incomplete selections */
+  hasVariants?: boolean;
+}
+
+/**
+ * Returns true when a cart item belongs to a product that has variants but
+ * none (or not all) variant options have been selected yet.
+ */
+export function isCartItemIncomplete(item: CartItem): boolean {
+  if (!item.hasVariants) return false;
+  return !item.variantOptionIds || item.variantOptionIds.length === 0;
 }
 
 /** Helper: builds a stable cart key from productId + optional variant option IDs */
@@ -32,6 +43,7 @@ interface CartContextValue {
   ) => void;
   remove: (cartKey: string) => void;
   updateQty: (cartKey: string, quantity: number) => void;
+  updateVariants: (cartKey: string, variantOptionIds: string[], variantLabel: string) => void;
   setNotes: (notes: string) => void;
   clear: () => void;
 }
@@ -110,6 +122,40 @@ export function CartProvider({ children }: { children: ReactNode }) {
             ? prev.filter((p) => p.cartKey !== cartKey)
             : prev.map((p) => (p.cartKey === cartKey ? { ...p, quantity } : p))
         ),
+
+      updateVariants: (cartKey, variantOptionIds, variantLabel) => {
+        setItems((prev) => {
+          const item = prev.find((p) => p.cartKey === cartKey);
+          if (!item) return prev;
+
+          const newCartKey = buildCartKey(item.productId, variantOptionIds);
+
+          // Check if another item with target variants already exists
+          const existing = prev.find((p) => p.cartKey === newCartKey);
+          if (existing) {
+            // Merge quantities and remove the old item
+            return prev
+              .map((p) =>
+                p.cartKey === newCartKey
+                  ? { ...p, quantity: p.quantity + item.quantity }
+                  : p
+              )
+              .filter((p) => p.cartKey !== cartKey);
+          }
+
+          // Just update the item details
+          return prev.map((p) =>
+            p.cartKey === cartKey
+              ? {
+                  ...p,
+                  cartKey: newCartKey,
+                  variantOptionIds,
+                  variantLabel,
+                }
+              : p
+          );
+        });
+      },
 
       setNotes: (n) => setNotesState(n.slice(0, 500)),
 

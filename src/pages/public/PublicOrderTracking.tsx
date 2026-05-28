@@ -20,6 +20,7 @@ import { Separator } from "@/components/ui/separator";
 import { WhatsAppButton } from "@/components/store/WhatsAppButton";
 import { EmptyState } from "@/components/store/EmptyState";
 import { CustomerAuthModal } from "@/components/store/CustomerAuthModal";
+import { getStoreLink } from "@/lib/tenant";
 
 // ─── Pix helpers (kept from old confirmation page) ────────────────────────────
 
@@ -375,7 +376,7 @@ export default function PublicOrderTracking() {
       <div className="container py-16">
         <EmptyState
           title="Pedido não encontrado"
-          action={<Button asChild><Link to={`/loja/${store.slug}`}>Voltar à loja</Link></Button>}
+          action={<Button asChild><Link to={getStoreLink("", store.slug)}>Voltar à loja</Link></Button>}
         />
       </div>
     );
@@ -574,11 +575,11 @@ export default function PublicOrderTracking() {
         )}
         {isAuthenticated ? (
           <Button asChild variant="outline" className="flex-1">
-            <Link to={`/loja/${store.slug}/minha-conta`}>Meus pedidos</Link>
+            <Link to={getStoreLink("minha-conta", store.slug)}>Meus pedidos</Link>
           </Button>
         ) : (
           <Button asChild variant="outline" className="flex-1">
-            <Link to={`/loja/${store.slug}`}>Voltar à loja</Link>
+            <Link to={getStoreLink("", store.slug)}>Voltar à loja</Link>
           </Button>
         )}
       </div>
@@ -598,7 +599,7 @@ export default function PublicOrderTracking() {
             </p>
           </div>
           <Button asChild size="sm" variant="outline">
-            <Link to={`/loja/${store.slug}/minha-conta`}>Minha Conta</Link>
+            <Link to={getStoreLink("minha-conta", store.slug)}>Minha Conta</Link>
           </Button>
         </div>
       )}

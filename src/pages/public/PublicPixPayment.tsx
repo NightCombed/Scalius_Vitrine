@@ -8,6 +8,7 @@ import { useTenant } from "@/contexts/TenantContext";
 import { formatBRL } from "@/lib/mockData";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { getStoreLink } from "@/lib/tenant";
 
 function useCountdown(expiresAt: string | null | undefined) {
   const [secondsLeft, setSecondsLeft] = useState<number>(0);
@@ -64,7 +65,7 @@ export default function PublicPixPayment() {
   useEffect(() => {
     if (order?.payment_status === "paid") {
       toast.success("Pagamento confirmado! 🎉");
-      setTimeout(() => navigate(`/loja/${store?.slug}/pedido/${orderId}`), 1500);
+      setTimeout(() => navigate(getStoreLink(`pedido/${orderId}`, store?.slug || "")), 1500);
     }
   }, [order?.payment_status, navigate, orderId, store?.slug]);
 
@@ -121,7 +122,7 @@ export default function PublicPixPayment() {
     return (
       <div className="container py-16 text-center">
         <p className="text-muted-foreground mb-4">Pedido não encontrado.</p>
-        <Button asChild variant="outline"><Link to={`/loja/${store.slug}`}>Voltar à loja</Link></Button>
+        <Button asChild variant="outline"><Link to={getStoreLink("", store.slug)}>Voltar à loja</Link></Button>
       </div>
     );
   }
@@ -228,7 +229,7 @@ export default function PublicPixPayment() {
       {/* Back link */}
       <div className="mt-8 text-center">
         <Link
-          to={`/loja/${store.slug}/pedido/${orderId}`}
+          to={getStoreLink(`pedido/${orderId}`, store.slug)}
           className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
         >
           Ver resumo do pedido

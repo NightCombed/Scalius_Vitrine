@@ -160,7 +160,7 @@ export default function PublicProductDetail() {
     const handleAdd = () => {
         if (effectiveOutOfStock) return;
         if (hasVariants && !allGroupsSelected) {
-            toast.error("Selecione todas as opções antes de adicionar.");
+            toast.error("Escolha uma opção em cada campo antes de adicionar.");
             return;
         }
         add(
@@ -171,6 +171,7 @@ export default function PublicProductDetail() {
                 image_url: images[0] ?? null,
                 variantLabel: selectedVariantLabel || undefined,
                 variantOptionIds: selectedVariantOptionIds.length > 0 ? selectedVariantOptionIds : undefined,
+                hasVariants: hasVariants || undefined,
             },
             qty
         );
@@ -183,7 +184,7 @@ export default function PublicProductDetail() {
     const handleBuyNow = () => {
         if (effectiveOutOfStock) return;
         if (hasVariants && !allGroupsSelected) {
-            toast.error("Selecione todas as opções antes de continuar.");
+            toast.error("Escolha uma opção em cada campo antes de continuar.");
             return;
         }
         handleAdd();
@@ -385,7 +386,7 @@ export default function PublicProductDetail() {
                             {/* Subtle validation hint */}
                             {!allGroupsSelected && (
                                 <p className="text-xs text-muted-foreground">
-                                    Selecione todas as opções acima para adicionar ao carrinho.
+                                    Escolha uma opção em cada campo acima para adicionar ao carrinho.
                                 </p>
                             )}
                         </div>

@@ -72,6 +72,25 @@ const App = () => {
                     <Route path="minha-conta" element={<PublicMyAccount />} />
                   </Route>
 
+                  {/* Fallback support for /loja/:slug paths on subdomains to prevent 404s */}
+                  <Route
+                    path="/loja/:slug"
+                    element={
+                      <TenantProvider fromRoute>
+                        <PublicStoreLayout />
+                      </TenantProvider>
+                    }
+                  >
+                    <Route index element={<PublicStoreHome />} />
+                    <Route path="produto/:productId" element={<PublicProductDetail />} />
+                    <Route path="carrinho" element={<PublicCart />} />
+                    <Route path="checkout" element={<PublicCheckout />} />
+                    <Route path="pedido/:orderId" element={<PublicOrderTracking />} />
+                    <Route path="pagar/:orderId" element={<PublicPixPayment />} />
+                    <Route path="conta" element={<PublicCustomerAuth />} />
+                    <Route path="minha-conta" element={<PublicMyAccount />} />
+                  </Route>
+
                   {/* Store admin accessible on subdomain */}
                   <Route
                     path="/admin"

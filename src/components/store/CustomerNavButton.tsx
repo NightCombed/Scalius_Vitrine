@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { getStoreLink } from "@/lib/tenant";
 
 interface CustomerNavButtonProps {
   storeId: string;
@@ -71,7 +72,7 @@ export function CustomerNavButton({ storeId, storeSlug }: CustomerNavButtonProps
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild className="gap-2">
-            <Link to={`/loja/${storeSlug}/minha-conta`}>
+            <Link to={getStoreLink("minha-conta", storeSlug)}>
               <ShoppingBag className="h-4 w-4" /> Meus pedidos
             </Link>
           </DropdownMenuItem>

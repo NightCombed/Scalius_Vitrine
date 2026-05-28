@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { getStoreLink } from "@/lib/tenant";
 
 // ─── Status helpers ────────────────────────────────────────────────────────────
 
@@ -136,7 +137,7 @@ function OrdersTab({ storeSlug }: { storeSlug: string }) {
           <ShoppingBag className="h-12 w-12 text-muted-foreground/30 mx-auto" />
           <p className="font-medium text-muted-foreground">Nenhum pedido encontrado</p>
           <Button asChild size="sm" variant="outline">
-            <Link to={`/loja/${storeSlug}`}>Explorar a loja</Link>
+            <Link to={getStoreLink("", storeSlug)}>Explorar a loja</Link>
           </Button>
         </div>
       ) : (
@@ -171,7 +172,7 @@ function OrdersTab({ storeSlug }: { storeSlug: string }) {
                 <Separator className="my-3" />
                 <div className="flex justify-end">
                   <Button asChild size="sm" variant="ghost" className="gap-1 h-7 text-xs">
-                    <Link to={`/loja/${storeSlug}/pedido/${order.id}`}>
+                    <Link to={getStoreLink(`pedido/${order.id}`, storeSlug)}>
                       Ver detalhes <ChevronRight className="h-3.5 w-3.5" />
                     </Link>
                   </Button>
@@ -217,7 +218,7 @@ function ProfileTab({ customer }: { customer: any }) {
   const handleLogout = async () => {
     await logout();
     toast.success("Até logo!");
-    navigate(`/loja/${store?.slug}`);
+    navigate(getStoreLink("", store?.slug || ""));
   };
 
   const memberSince = customer.created_at
@@ -301,7 +302,7 @@ export default function PublicMyAccount() {
   // Redirect if not authenticated
   if (!isLoading && !isAuthenticated) {
     const returnTo = encodeURIComponent(window.location.pathname);
-    navigate(`/loja/${store?.slug}/conta?returnTo=${returnTo}`, { replace: true });
+    navigate(getStoreLink(`conta?returnTo=${returnTo}`, store?.slug || ""), { replace: true });
     return null;
   }
 

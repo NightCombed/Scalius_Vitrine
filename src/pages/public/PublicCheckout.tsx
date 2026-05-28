@@ -9,7 +9,7 @@ import { CalendarIcon, MapPin, Store as StoreIcon, Truck, AlertTriangle, Loader2
 import { toast } from "sonner";
 
 import { useTenant } from "@/contexts/TenantContext";
-import { useCart } from "@/contexts/CartContext";
+import { useCart, isCartItemIncomplete } from "@/contexts/CartContext";
 import { useCustomerAuth } from "@/hooks/useCustomerAuth";
 import { formatBRL } from "@/lib/mockData";
 import { useQuery } from "@tanstack/react-query";
@@ -187,6 +187,23 @@ function PublicCheckoutInner() {
 
   const watched = form.watch();
   const deliveryType = watched.delivery_type;
+
+  // ── Verifica quais produtos do carrinho têm variantes no banco ──────────────
+  const cartProductIds = items.map((it) => it.productId);
+  const { data: productsWithVariants } = useQuery({
+    queryKey: ["checkout-variant-check", cartProductIds.join(",")],
+    queryFn: async () => {
+      if (cartProductIds.length === 0) return new Set<string>();
+      const { data, error } = await supabase
+        .from("product_variant_groups")
+        .select("product_id")
+        .in("product_id", cartProductIds);
+      if (error) throw error;
+      return new Set<string>((data ?? []).map((g: any) => g.product_id as string));
+    },
+    enabled: cartProductIds.length > 0,
+    staleTime: 30_000,
+  });
 
   // Active shipping rules for this store (regions mode)
   const { data: rules = [] } = useQuery<ShippingRule[]>({
@@ -723,9 +740,49 @@ function PublicCheckoutInner() {
     );
   }
 
+  // ── Incomplete-variant guard ───────────────────────────────────────────────
+  const isItemIncomplete = (it: { productId: string; hasVariants?: boolean; variantOptionIds?: string[] }) => {
+    const hasV = it.hasVariants || productsWithVariants?.has(it.productId);
+    if (!hasV) return false;
+    return !it.variantOptionIds || it.variantOptionIds.length === 0;
+  };
+  const incompleteItems = items.filter(isItemIncomplete);
+  const hasIncomplete = incompleteItems.length > 0;
+
   return (
     <div className="container py-8 md:py-14 max-w-3xl mx-auto">
       <h1 className="font-serif text-3xl md:text-4xl mb-8 text-center">Finalizar pedido</h1>
+
+      {/* Banner de alerta: produtos sem varia\u00e7\u00e3o selecionada */}
+      {hasIncomplete && (
+        <div className="mb-6 rounded-xl border border-destructive/40 bg-destructive/5 p-4 flex flex-col gap-3 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-destructive leading-tight">
+                {incompleteItems.length === 1
+                  ? "1 produto precisa de uma opção selecionada"
+                  : `${incompleteItems.length} produtos precisam de opções selecionadas`}
+              </h3>
+              <p className="text-sm text-destructive/80 mt-0.5">
+                Selecione uma opção em cada campo antes de finalizar o pedido.
+              </p>
+            </div>
+          </div>
+          <ul className="flex flex-col gap-1.5 pl-8">
+            {incompleteItems.map((it) => (
+              <li key={it.cartKey}>
+                <Link
+                  to={getStoreLink(`produto/${it.productId}`, store.slug)}
+                  className="text-sm text-destructive font-medium hover:underline flex items-center gap-1"
+                >
+                  → {it.name} — escolher opção
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {showPrefillPrompt && (
         <div className="mb-6 rounded-xl border border-primary/20 bg-primary/5 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
@@ -1287,7 +1344,11 @@ function PublicCheckoutInner() {
                 </div>
               </div>
 
-              <Button type="submit" disabled={submitting} className="w-full h-12 text-lg shadow-md mt-4">
+              <Button
+                type="submit"
+                disabled={submitting || hasIncomplete}
+                className="w-full h-12 text-lg shadow-md mt-4"
+              >
                 {submitting ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : null}
                 Finalizar Pedido
               </Button>
