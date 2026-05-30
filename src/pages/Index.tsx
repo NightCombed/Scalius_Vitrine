@@ -167,16 +167,11 @@ const Index = () => {
                 </div>
                 {/* Melhor Envio */}
                 <div className="integration-card">
-                  <img src="/svg/Melhor envio.svg" alt="Melhor Envio" style={{ height: '20px', width: 'auto' }} />
+                  <img src="/svg/melhor-envio.png" alt="Melhor Envio" style={{ height: '20px', width: 'auto' }} />
                 </div>
-                {/* InfinitePay */}
-                <div className="integration-card" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <rect width="24" height="24" rx="6" fill="#00C49A"/>
-                    <path d="M7 12C7 9.24 9.24 7 12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                    <path d="M12 17C10.34 17 9 15.66 9 14C9 12.34 10.34 11 12 11" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                  </svg>
-                  <span style={{ fontWeight: 700, fontSize: '13px', color: '#1D2939', letterSpacing: '-0.2px' }}>InfinitePay</span>
+                {/* AWS */}
+                <div className="integration-card">
+                  <img src="/svg/aws.png" alt="AWS" style={{ height: '20px', width: 'auto' }} />
                 </div>
               </div>
             </div>
