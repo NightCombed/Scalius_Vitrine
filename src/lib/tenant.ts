@@ -13,6 +13,11 @@ const RESERVED = new Set([
 ]);
 
 const ROOT_HOSTS = new Set(["scalius.com.br"]);
+const IPV4_HOST = /^(?:\d{1,3}\.){3}\d{1,3}$/;
+
+function isIpHost(host: string): boolean {
+  return IPV4_HOST.test(host) || host.includes(":");
+}
 
 export function resolveTenantSlug(): string | null {
   if (typeof window === "undefined") return null;
@@ -25,6 +30,8 @@ export function resolveTenantSlug(): string | null {
 
   // 2) Subdomain detection
   const host = url.hostname;
+  if (isIpHost(host)) return null;
+
   const parts = host.split(".");
 
   // Strip known root suffix

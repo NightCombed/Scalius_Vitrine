@@ -679,6 +679,26 @@ export default function AdminOrderDetail() {
                 </div>
               </div>
             )}
+            {order.customer_email && (
+              <div>
+                <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">E-mail</div>
+                <div className="flex items-center justify-between gap-2 text-sm bg-muted/30 px-3 py-2 rounded-md">
+                  <span className="truncate flex items-center gap-2" title={order.customer_email}>
+                    <span className="text-muted-foreground text-xs font-semibold">@</span>
+                    {order.customer_email}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 shrink-0"
+                    onClick={() => copyToClipboard(order.customer_email ?? "", "E-mail")}
+                    title="Copiar E-mail"
+                  >
+                    <Copy className="h-3.5 w-3.5 text-muted-foreground" />
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </section>
 

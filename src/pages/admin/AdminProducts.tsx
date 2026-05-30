@@ -347,14 +347,12 @@ export default function AdminProducts() {
   });
 
   // Sync local order from server data (only when not in drag mode)
-  const productsKey = products.map((p) => p.id).join(",");
   useEffect(() => {
     if (!isDragMode) {
       setLocalOrder(products);
       setLocalFeaturedOrder(products.filter((p) => p.featured));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productsKey, isDragMode]);
+  }, [products, isDragMode]);
 
   const { data: categories = [] } = useQuery({
     queryKey: ["categories", store?.id],

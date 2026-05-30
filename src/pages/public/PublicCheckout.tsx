@@ -1109,19 +1109,21 @@ function PublicCheckoutInner() {
               </h2>
               
               <div className="grid sm:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nome completo</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Como podemos te chamar?" maxLength={100} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="sm:col-span-2">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nome completo</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Como podemos te chamar?" maxLength={100} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <FormField
                   control={form.control}
@@ -1136,25 +1138,27 @@ function PublicCheckoutInner() {
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>E-mail{deliveryType === "national_shipping" ? " *" : ""}</FormLabel>
+                      <FormControl>
+                        <Input placeholder="seuemail@exemplo.com" type="email" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Usado para enviar atualizações sobre a situação do seu pedido.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
               {deliveryType === "national_shipping" && (
                 <div className="space-y-4 pt-2">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>E-mail *</FormLabel>
-                        <FormControl>
-                          <Input placeholder="seuemail@exemplo.com" type="email" {...field} />
-                        </FormControl>
-                        <FormDescription>Necessário para enviar o código de rastreio.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
                   <FormField
                     control={form.control}
                     name="document"
